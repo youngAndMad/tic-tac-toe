@@ -9,4 +9,5 @@ class User {
     var username: String? = null
     @JsonIgnore
     var imageBase64: String? = null
+    var online: Boolean = false
 }
