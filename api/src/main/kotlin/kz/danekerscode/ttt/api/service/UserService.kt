@@ -31,4 +31,7 @@ class UserService(
             .orElseThrow { RuntimeException("User not found") }
     }
 
+    fun countOnlineUsers(): Long {
+        return userRepository.countAllByOnlineIsTrue()
+    }
 }

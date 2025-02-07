@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User } from "../models/user.model";
+import { User, UsersCount } from "../models/user.model";
 
 class UserService {
   async me(): Promise<User> {
@@ -22,6 +22,11 @@ class UserService {
       responseType: "blob",
     });
     return response.data;
+  }
+
+  async onlineUsersCount(): Promise<UsersCount> {
+    const meResponse = await axios.get<UsersCount>("/api/v1/users/online");
+    return meResponse.data;
   }
 }
 

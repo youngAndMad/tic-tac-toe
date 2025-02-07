@@ -3,3 +3,7 @@ export type User = {
   username: string;
   imageBase64?: string;
 };
+
+export type UsersCount = {
+  count: number;
+};

@@ -1,16 +1,26 @@
 import GitHubIcon from "@mui/icons-material/GitHub";
 import { Box, Button, Card, CardContent, Typography } from "@mui/material";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/useUser";
+import { userService } from "../service/user.service";
 
 export default function MenuPage() {
   const navigate = useNavigate();
   const { user } = useUser();
 
+  const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
+
   const handleGithubLogin = () => {
     navigate("/oauth2/authorization/github");
   };
+
+  useEffect(() => {
+    userService
+      .onlineUsersCount()
+      .then((usersCount) => setOnlineUsersCount(usersCount.count + 1));
+  }, []);
 
   return (
     <Box
@@ -22,8 +32,25 @@ export default function MenuPage() {
         justifyContent: "center",
         background: "linear-gradient(135deg, #42a5f5, #7e57c2)",
         padding: 3,
+        position: "relative",
       }}
     >
+      {/* Online users count at the top left */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 16,
+          left: 16,
+          background: "rgba(0, 0, 0, 0.7)",
+          color: "white",
+          padding: "8px 16px",
+          borderRadius: "8px",
+          fontWeight: "bold",
+        }}
+      >
+        Online Users: {onlineUsersCount}
+      </Box>
+
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}

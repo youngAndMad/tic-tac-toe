@@ -21,13 +21,15 @@ class SecurityConfig {
         http: HttpSecurity,
         clientRegistrationRepository: ClientRegistrationRepository,
         oauth2SuccessHandler: Oauth2SuccessHandler
-    ) : SecurityFilterChain {
+    ): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .httpBasic { it.disable() }
             .formLogin { it.disable() }
-            .authorizeHttpRequests {
-                auth -> auth.anyRequest().authenticated()
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers("/api/v1/users/online").permitAll()
+                    .anyRequest().authenticated()
             }
             .headers { headers ->
                 headers.frameOptions { frameOptions ->

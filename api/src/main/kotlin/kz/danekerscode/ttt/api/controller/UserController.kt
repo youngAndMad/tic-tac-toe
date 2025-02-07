@@ -35,4 +35,7 @@ class UserController(
             response.outputStream.write(Base64.getDecoder().decode(it))
         }
     }
+
+    @GetMapping("/online")
+    fun onlineUsersCount() = mapOf("count" to userService.countOnlineUsers())
 }
