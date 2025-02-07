@@ -18,7 +18,7 @@ export default function ProfilePage() {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [username, setUsername] = useState("Player1");
   const [stats, setStats] = useState({ gamesPlayed: 25, wins: 15, losses: 10 });
-  const [open, setOpen] = useState(false); // Controls the edit dialog
+  const [open, setOpen] = useState(false);
 
   const winRate = stats.gamesPlayed
     ? ((stats.wins / stats.gamesPlayed) * 100).toFixed(1)
