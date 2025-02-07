@@ -13,6 +13,18 @@ export default defineConfig({
         secure: false,
         ws: true,
       },
+      "/login": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
+      "/oauth2": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
     },
   },
 });
