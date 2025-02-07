@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { useState } from "react";
 
 type SquareProps = {
@@ -55,7 +56,7 @@ function Board({ xIsNext, squares, onPlay }: BoardProps) {
   );
 }
 
-export default function Game() {
+export default function LocalGame() {
   const [history, setHistory] = useState<(string | null)[][]>([
     Array(9).fill(null),
   ]);
@@ -82,14 +83,31 @@ export default function Game() {
   ));
 
   return (
-    <div className="game">
-      <div className="game-board">
-        <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #42a5f5, #7e57c2)",
+        padding: 3,
+        position: "relative",
+      }}
+    >
+      <div className="game">
+        <div className="game-board">
+          <Board
+            xIsNext={xIsNext}
+            squares={currentSquares}
+            onPlay={handlePlay}
+          />
+        </div>
+        <div className="game-info">
+          <ol>{moves}</ol>
+        </div>
       </div>
-      <div className="game-info">
-        <ol>{moves}</ol>
-      </div>
-    </div>
+    </Box>
   );
 }
 

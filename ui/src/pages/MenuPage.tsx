@@ -13,7 +13,7 @@ export default function MenuPage() {
   const [onlineUsersCount, setOnlineUsersCount] = useState<number>(0);
 
   const handleGithubLogin = () => {
-    navigate("/oauth2/authorization/github");
+    window.location.href = "/oauth2/authorization/github";
   };
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function MenuPage() {
               <Button
                 variant="contained"
                 color="success"
-                onClick={() => navigate("/friends")}
+                onClick={() => navigate("/local-game")}
               >
                 Play with a Friend
               </Button>

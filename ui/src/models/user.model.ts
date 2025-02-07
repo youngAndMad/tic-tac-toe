@@ -1,7 +1,7 @@
 export type User = {
   id: string;
   username: string;
-  imageBase64?: string;
+  online: boolean;
 };
 
 export type UsersCount = {

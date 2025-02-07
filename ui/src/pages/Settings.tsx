@@ -22,7 +22,7 @@ const musicTracks = [
 export default function SettingsPage() {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(theme.palette.mode === "dark");
-  const [soundEnabled, setSoundEnabled] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [volume, setVolume] = useState(50);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 

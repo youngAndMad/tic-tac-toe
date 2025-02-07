@@ -7,6 +7,11 @@ class UserService {
     return meResponse.data;
   }
 
+  async getFriends(): Promise<User[]> {
+    const meResponse = await axios.get<User[]>("/api/v1/user-friendships");
+    return meResponse.data;
+  }
+
   async uploadAvatar(file: File): Promise<unknown> {
     const formData = new FormData();
     formData.append("image", file);
