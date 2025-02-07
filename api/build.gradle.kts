@@ -24,6 +24,8 @@ dependencies {
     implementation("org.springframework.session:spring-session-data-mongodb")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-websocket")
+
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 
     // kotlin dependencies
