@@ -11,6 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Howler from "react-howler";
+import GoBackButton from "../components/GoBackButton";
 
 const musicTracks = [
   "/music/track1.mp3",
@@ -21,7 +22,7 @@ const musicTracks = [
 export default function SettingsPage() {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(theme.palette.mode === "dark");
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const [volume, setVolume] = useState(50);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
@@ -127,6 +128,8 @@ export default function SettingsPage() {
             loop={true}
             volume={volume / 100}
           />
+
+          <GoBackButton />
         </CardContent>
       </Card>
     </Box>

@@ -47,6 +47,13 @@ export default function MenuPage() {
           </Button>
           <Button
             variant="contained"
+            color="error"
+            onClick={() => navigate("/profile")}
+          >
+            Profile
+          </Button>
+          <Button
+            variant="contained"
             color="secondary"
             onClick={() => navigate("/settings")}
           >
