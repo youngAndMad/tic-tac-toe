@@ -109,6 +109,9 @@ const UserList: React.FC = () => {
               ))}
             </List>
           )}
+          <Button variant="contained" color="success" fullWidth sx={{ mt: 2 }}>
+            Random game
+          </Button>
           <GoBackButton />
         </CardContent>
       </Card>

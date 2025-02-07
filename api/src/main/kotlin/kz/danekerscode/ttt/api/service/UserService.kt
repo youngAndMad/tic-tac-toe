@@ -34,4 +34,5 @@ class UserService(
     fun countOnlineUsers(): Long {
         return userRepository.countAllByOnlineIsTrue()
     }
+
 }

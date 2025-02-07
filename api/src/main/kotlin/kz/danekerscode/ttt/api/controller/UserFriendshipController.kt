@@ -1,5 +1,6 @@
 package kz.danekerscode.ttt.api.controller
 
+import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.model.UserFriendship
 import kz.danekerscode.ttt.api.service.UserFriendshipService
 import org.springframework.http.HttpStatus
@@ -13,9 +14,8 @@ class UserFriendshipController(
 ) {
 
     @PostMapping
-    fun createUserFriendship(@RequestBody userFriendship: UserFriendship): ResponseEntity<UserFriendship> {
-        val createdUserFriendship = userFriendshipService.createUserFriendship(userFriendship)
-        return ResponseEntity.ok(createdUserFriendship)
+    fun createUserFriendship(@RequestBody userFriendship: UserFriendship): UserFriendship {
+        return userFriendshipService.createUserFriendship(userFriendship)
     }
 
     @GetMapping("/{id}")
@@ -49,5 +49,19 @@ class UserFriendshipController(
     }
 
     @GetMapping
-    fun getAllUserFriendships() = userFriendshipService.getAllUserFriendships()
+    fun getAllUserFriendships(): MutableList<User> {
+        return userFriendshipService.getAllUserFriendships()
+            .apply {
+                add(User().apply {
+                    this.id = "1"
+                    this.online = true
+                    this.username = "mock"
+                })
+                add(User().apply {
+                    this.id = "2"
+                    this.online = false
+                    this.username = "another mock user"
+                })
+            }
+    }
 }

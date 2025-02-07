@@ -5,4 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface UserFriendshipRepository : MongoRepository<UserFriendship, String>
+interface UserFriendshipRepository : MongoRepository<UserFriendship, String>{
+    fun findAllByUserIdOrFriendId(userId: String, friendId: String): List<UserFriendship>
+}

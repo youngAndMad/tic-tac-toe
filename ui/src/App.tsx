@@ -4,6 +4,7 @@ import { UserProvider } from "./hooks/useUser";
 import theme from "./lib/theme";
 import LocalGame from "./pages/LocalGame";
 import MenuPage from "./pages/MenuPage";
+import PlayOnline from "./pages/PlayOnline";
 import ProfilePage from "./pages/Profile";
 import SettingsPage from "./pages/Settings";
 import { WebSocketProvider } from "./providers/WebSocketProvider";
@@ -20,6 +21,7 @@ export default function App() {
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/local-game" element={<LocalGame />} />
+                <Route path="/game" element={<PlayOnline />} />
               </Routes>
             </Router>
           </WebSocketProvider>

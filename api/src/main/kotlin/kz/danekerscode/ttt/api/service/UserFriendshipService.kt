@@ -1,12 +1,14 @@
 package kz.danekerscode.ttt.api.service
 
+import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.model.UserFriendship
 import kz.danekerscode.ttt.api.repository.UserFriendshipRepository
 import org.springframework.stereotype.Service
 
 @Service
 class UserFriendshipService(
-    private val userFriendshipRepository: UserFriendshipRepository
+    private val userFriendshipRepository: UserFriendshipRepository,
+    private val userService: UserService
 ) {
 
     fun createUserFriendship(userFriendship: UserFriendship): UserFriendship {
@@ -32,7 +34,17 @@ class UserFriendshipService(
         }
     }
 
-    fun getAllUserFriendships(): List<UserFriendship> {
-        return userFriendshipRepository.findAll()
+    fun getAllUserFriendships(): MutableList<User> {
+        return userService.currentUser()?.let {
+            val currentUserId = it.id!!
+            userFriendshipRepository.findAllByUserIdOrFriendId(userId = currentUserId, friendId = currentUserId)
+                .map { userFriendship ->
+                    if (userFriendship.userId == currentUserId) {
+                        userService.findById(userFriendship.friendId!!)
+                    } else {
+                        userService.findById(userFriendship.userId!!)
+                    }
+                }
+        }?.toMutableList() ?: mutableListOf()
     }
 }
