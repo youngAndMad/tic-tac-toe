@@ -35,7 +35,6 @@ export default function MenuPage() {
         position: "relative",
       }}
     >
-      {/* Online users count at the top left */}
       <Box
         sx={{
           position: "absolute",
