@@ -40,5 +40,6 @@ class Oauth2SuccessHandler(
         }
         println("User with email: $username already exists")
 
+        response?.sendRedirect("http://localhost:5173")
     }
 }

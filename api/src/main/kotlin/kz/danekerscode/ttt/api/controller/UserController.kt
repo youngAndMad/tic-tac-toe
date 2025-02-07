@@ -1,11 +1,11 @@
 package kz.danekerscode.ttt.api.controller
 
+import jakarta.servlet.http.HttpServletResponse
 import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.service.UserService
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -13,9 +13,26 @@ class UserController(
     private val userService: UserService
 ) {
 
-    @RequestMapping("/me")
-    fun me(@AuthenticationPrincipal user: DefaultOAuth2User): User? {
-        return userService.findByUsername(user.attributes["login"] as String)
+    @GetMapping("/me")
+    fun me(): User? {
+        return userService.currentUser()
     }
 
+    @PostMapping("/avatar")
+    fun uploadAvatar(
+        @RequestParam image: MultipartFile
+    ) {
+        userService.uploadAvatar(image)
+    }
+
+    @GetMapping("/avatar/{id}")
+    fun downloadAvatar(
+        @PathVariable id: String,
+        response: HttpServletResponse
+    ) {
+        response.contentType = "image/jpeg"
+        userService.findById(id).imageBase64?.let {
+            response.outputStream.write(Base64.getDecoder().decode(it))
+        }
+    }
 }
