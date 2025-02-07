@@ -10,13 +10,24 @@ import {
 import { useTheme } from "@mui/material/styles";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import GoBackButton from "../components/GoBackButton";
+import Howler from "react-howler";
+
+const musicTracks = [
+  "/music/track1.mp3",
+  "/music/track2.mp3",
+  "/music/track3.mp3",
+];
 
 export default function SettingsPage() {
   const theme = useTheme();
   const [darkMode, setDarkMode] = useState(theme.palette.mode === "dark");
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [volume, setVolume] = useState(50);
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+
+  const changeMusic = () => {
+    setCurrentTrackIndex((prevIndex) => (prevIndex + 1) % musicTracks.length);
+  };
 
   const handleSaveSettings = () => {
     alert(
@@ -25,8 +36,6 @@ export default function SettingsPage() {
       }\nVolume: ${volume}`
     );
   };
-
-  const handleGoBack = () => {};
 
   return (
     <Box
@@ -57,7 +66,6 @@ export default function SettingsPage() {
 
       <Card sx={{ width: 340, padding: 3, textAlign: "center", boxShadow: 3 }}>
         <CardContent>
-          {/* Dark Mode Toggle */}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -71,7 +79,6 @@ export default function SettingsPage() {
             />
           </Box>
 
-          {/* Sound Toggle */}
           <Box
             display="flex"
             justifyContent="space-between"
@@ -85,7 +92,6 @@ export default function SettingsPage() {
             />
           </Box>
 
-          {/* Volume Slider */}
           <Typography gutterBottom>Volume</Typography>
           <Slider
             value={volume}
@@ -95,7 +101,16 @@ export default function SettingsPage() {
             step={1}
           />
 
-          {/* Save Button */}
+          <Button
+            variant="outlined"
+            color="secondary"
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={changeMusic}
+          >
+            Change Background Music 🎵
+          </Button>
+
           <Button
             variant="contained"
             color="primary"
@@ -105,7 +120,13 @@ export default function SettingsPage() {
           >
             Save Settings
           </Button>
-          <GoBackButton />
+
+          <Howler
+            src={musicTracks[currentTrackIndex]}
+            playing={soundEnabled}
+            loop={true}
+            volume={volume / 100}
+          />
         </CardContent>
       </Card>
     </Box>
