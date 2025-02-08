@@ -13,6 +13,7 @@ import {
 import React, { useEffect, useState } from "react";
 import GoBackButton from "../components/GoBackButton";
 import { User } from "../models/user.model";
+import { gameService } from "../service/game.service";
 import { userService } from "../service/user.service";
 
 const UserList: React.FC = () => {
@@ -29,6 +30,15 @@ const UserList: React.FC = () => {
 
   const handlePlayGame = (userId: string) => {
     console.log(`Starting game with user: ${userId}`);
+  };
+
+  const handleRandomGame = async () => {
+    console.log("Starting random game");
+    try {
+      gameService.createOrJoinRoom();
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -109,7 +119,13 @@ const UserList: React.FC = () => {
               ))}
             </List>
           )}
-          <Button variant="contained" color="success" fullWidth sx={{ mt: 2 }}>
+          <Button
+            variant="contained"
+            color="success"
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={handleRandomGame}
+          >
             Random game
           </Button>
           <GoBackButton />

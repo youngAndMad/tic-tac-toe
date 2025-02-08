@@ -3,25 +3,36 @@ package kz.danekerscode.ttt.api.service
 import kz.danekerscode.ttt.api.model.GameRoom
 import kz.danekerscode.ttt.api.model.GameRoomStatus
 import kz.danekerscode.ttt.api.repository.GameRoomRepository
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
-import java.util.*
 
 @Service
 class GameService(
-    private val gameRoomRepository: GameRoomRepository
+    private val gameRoomRepository: GameRoomRepository,
+    private val userService: UserService,
+    private val smt: SimpMessagingTemplate
 ) {
 
-    fun createOrJoinRoom(userId: String): GameRoom {
+    fun createOrJoinRoom(): GameRoom {
+        val currentUser = userService.currentUser()!!
+        val userId = currentUser.id
         val availableRoom = gameRoomRepository.findFirstByStatusOrderByCreatedDateAsc(GameRoomStatus.WAITING)
 
         return if (availableRoom != null) {
             availableRoom.playerO = userId
             availableRoom.status = GameRoomStatus.IN_PROGRESS
             availableRoom.currentTurn = availableRoom.playerX
-            gameRoomRepository.save(availableRoom)
+            val gameRoom = gameRoomRepository.save(availableRoom)
+
+            gameRoom.also {
+                smt.convertAndSend(
+                    "/user/${availableRoom.playerX}/game",
+                    gameRoom
+                )
+                println("Sent to ${availableRoom.playerX}")
+            }
         } else {
             val newRoom = GameRoom(
-                id = UUID.randomUUID().toString(),
                 playerX = userId,
                 status = GameRoomStatus.WAITING,
                 currentTurn = null,
@@ -31,6 +42,7 @@ class GameService(
                     }
                 }
             )
+            println("Created new room")
             gameRoomRepository.save(newRoom)
         }
     }

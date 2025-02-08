@@ -25,8 +25,7 @@ class WebSocketConfig : WebSocketMessageBrokerConfigurer {
     }
 
     override fun configureMessageBroker(registry: MessageBrokerRegistry) {
-        registry.enableSimpleBroker("/queue")
-        registry.setApplicationDestinationPrefixes("/app")
+        registry.enableSimpleBroker()
     }
 
     override fun configureMessageConverters(messageConverters: MutableList<MessageConverter>): Boolean {

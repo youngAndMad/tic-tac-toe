@@ -8,6 +8,7 @@ import {
 } from "react";
 import SockJS from "sockjs-client";
 import Stomp, { Client, Message } from "stompjs";
+import { useUser } from "../hooks/useUser";
 
 type Subscription = {
   topic: string;
@@ -28,7 +29,13 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
   const [client, setClient] = useState<Client | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
+  const { user } = useUser();
+
   useEffect(() => {
+    if (!user) {
+      console.log("User is not logged in");
+      return;
+    }
     const socket = new SockJS("/ws");
     const stompClient = Stomp.over(socket);
 
@@ -54,7 +61,7 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
         });
       }
     };
-  }, [subscriptions]);
+  }, [subscriptions, user]);
 
   const subscribe = useCallback(
     (topic: string, callback: (message: Message) => void) => {
@@ -98,7 +105,13 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
   );
 
   return (
-    <WebSocketContext.Provider value={{ subscribe, unsubscribe, sendMessage }}>
+    <WebSocketContext.Provider
+      value={{
+        subscribe,
+        unsubscribe,
+        sendMessage,
+      }}
+    >
       {children}
     </WebSocketContext.Provider>
   );

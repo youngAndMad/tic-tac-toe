@@ -31,8 +31,12 @@ class UserController(
         response: HttpServletResponse
     ) {
         response.contentType = "image/jpeg"
-        userService.findById(id).imageBase64?.let {
-            response.outputStream.write(Base64.getDecoder().decode(it))
+        runCatching {
+            userService.findById(id).imageBase64?.let {
+                response.outputStream.write(Base64.getDecoder().decode(it))
+            }
+        }.onFailure {
+            response.status = HttpServletResponse.SC_NOT_FOUND
         }
     }
 

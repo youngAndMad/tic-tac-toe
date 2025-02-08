@@ -11,8 +11,12 @@ spring:
   data:
     mongodb:
       database: ttt
-logging:
-  level:
-    org.springframework:
-      web: debug
-      security: debug
+#logging:
+#  level:
+#    org.springframework:
+#      web: debug
+#      security: debug
+
+server:
+  error:
+    include-message: always

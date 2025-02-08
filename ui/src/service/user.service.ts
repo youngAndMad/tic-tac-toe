@@ -3,8 +3,13 @@ import { User, UsersCount } from "../models/user.model";
 
 class UserService {
   async me(): Promise<User> {
-    const meResponse = await axios.get<User>("/api/v1/users/me");
-    return meResponse.data;
+    try {
+      const meResponse = await axios.get<User>("/api/v1/users/me");
+      return meResponse.data;
+    } catch (e) {
+      window.location.href = "/oauth2/authorization/github";
+      return null!!;
+    }
   }
 
   async getFriends(): Promise<User[]> {
