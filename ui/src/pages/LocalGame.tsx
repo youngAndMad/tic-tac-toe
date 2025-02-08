@@ -1,14 +1,32 @@
 import React, { useState } from "react";
 
-const defaultBoardStyle =
-  "w-20 h-20 flex items-center justify-center border-2 border-gray-600 text-xl font-bold";
+const boardStyles = {
+  default:
+    "w-20 h-20 flex items-center justify-center border-2 border-gray-600 text-xl font-bold bg-white",
+  dark: "w-20 h-20 flex items-center justify-center border-2 border-gray-800 text-xl font-bold bg-gray-700 text-white",
+  neon: "w-20 h-20 flex items-center justify-center border-2 border-pink-500 text-xl font-bold bg-black text-green-400",
+  ocean:
+    "w-20 h-20 flex items-center justify-center border-2 border-blue-500 text-xl font-bold bg-blue-300 text-white",
+  forest:
+    "w-20 h-20 flex items-center justify-center border-2 border-green-500 text-xl font-bold bg-green-200 text-brown-700",
+};
+
 const defaultFigures = { X: "X", O: "O" };
+
+const figureOptions = [
+  { label: "Classic (X & O)", figures: { X: "X", O: "O" } },
+  { label: "Fire & Ice", figures: { X: "🔥", O: "❄️" } },
+  { label: "Stars & Hearts", figures: { X: "⭐", O: "❤️" } },
+  { label: "Cats & Dogs", figures: { X: "🐱", O: "🐶" } },
+  { label: "Swords & Shields", figures: { X: "⚔️", O: "🛡️" } },
+];
 
 const LocalGame: React.FC = () => {
   const [board, setBoard] = useState<Array<string | null>>(Array(9).fill(null));
   const [isXNext, setIsXNext] = useState(true);
-  const [boardStyle, setBoardStyle] = useState(defaultBoardStyle);
+  const [boardStyle, setBoardStyle] = useState(boardStyles.default);
   const [figures, setFigures] = useState(defaultFigures);
+  const [winStats, setWinStats] = useState({ X: 0, O: 0 });
 
   const handleClick = (index: number) => {
     if (board[index] || calculateWinner(board)) return;
@@ -42,20 +60,22 @@ const LocalGame: React.FC = () => {
     return null;
   };
 
-  const changeFigures = (newFigures: { X: string; O: string }) => {
-    setFigures(newFigures);
-    setBoard(
-      board.map((cell) =>
-        cell === defaultFigures.X
-          ? newFigures.X
-          : cell === defaultFigures.O
-          ? newFigures.O
-          : cell
-      )
-    );
+  const restartGame = () => {
+    setBoard(Array(9).fill(null));
+    setIsXNext(true);
   };
 
   const winner = calculateWinner(board);
+  if (winner) {
+    setTimeout(() => {
+      setWinStats((prevStats) => ({
+        ...prevStats,
+        [winner]: prevStats[winner] + 1,
+      }));
+      restartGame();
+    }, 1000);
+  }
+
   const status = winner
     ? `Winner: ${winner}`
     : `Next Player: ${isXNext ? figures.X : figures.O}`;
@@ -76,19 +96,51 @@ const LocalGame: React.FC = () => {
           ))}
         </div>
         <p className="mt-4 text-lg font-semibold">{status}</p>
+        <button
+          className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+          onClick={restartGame}
+        >
+          Restart Game
+        </button>
         <div className="mt-4">
-          <button
-            className="mr-2 px-4 py-2 bg-gray-300 rounded"
-            onClick={() => changeFigures({ X: "🔥", O: "❄️" })}
-          >
-            Fire & Ice
-          </button>
-          <button
+          <p className="text-lg font-semibold">Win Statistics</p>
+          <p>
+            {figures.X}: {winStats.X} wins
+          </p>
+          <p>
+            {figures.O}: {winStats.O} wins
+          </p>
+        </div>
+        <div className="mt-4">
+          <label className="block font-semibold">Change Figures:</label>
+          <select
             className="px-4 py-2 bg-gray-300 rounded"
-            onClick={() => changeFigures(defaultFigures)}
+            onChange={(e) => {
+              const selectedOption = figureOptions.find(
+                (option) => option.label === e.target.value
+              );
+              if (selectedOption) setFigures(selectedOption.figures);
+            }}
           >
-            Reset Figures
-          </button>
+            {figureOptions.map((option, index) => (
+              <option key={index} value={option.label}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="mt-4">
+          <label className="block font-semibold">Change Board Style:</label>
+          <select
+            className="px-4 py-2 bg-gray-300 rounded"
+            onChange={(e) => setBoardStyle(boardStyles[e.target.value])}
+          >
+            <option value="default">Default</option>
+            <option value="dark">Dark Mode</option>
+            <option value="neon">Neon</option>
+            <option value="ocean">Ocean</option>
+            <option value="forest">Forest</option>
+          </select>
         </div>
       </div>
     </div>
