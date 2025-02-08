@@ -1,131 +1,98 @@
-import { Box } from "@mui/material";
-import { useState } from "react";
+import React, { useState } from "react";
 
-type SquareProps = {
-  value: string | null;
-  onSquareClick: () => void;
-};
+const defaultBoardStyle =
+  "w-20 h-20 flex items-center justify-center border-2 border-gray-600 text-xl font-bold";
+const defaultFigures = { X: "X", O: "O" };
 
-function Square({ value, onSquareClick }: SquareProps) {
-  return (
-    <button className="square" onClick={onSquareClick}>
-      {value}
-    </button>
-  );
-}
+const LocalGame: React.FC = () => {
+  const [board, setBoard] = useState<Array<string | null>>(Array(9).fill(null));
+  const [isXNext, setIsXNext] = useState(true);
+  const [boardStyle, setBoardStyle] = useState(defaultBoardStyle);
+  const [figures, setFigures] = useState(defaultFigures);
 
-type BoardProps = {
-  xIsNext: boolean;
-  squares: (string | null)[];
-  onPlay: (squares: (string | null)[]) => void;
-};
+  const handleClick = (index: number) => {
+    if (board[index] || calculateWinner(board)) return;
+    const newBoard = [...board];
+    newBoard[index] = isXNext ? figures.X : figures.O;
+    setBoard(newBoard);
+    setIsXNext(!isXNext);
+  };
 
-function Board({ xIsNext, squares, onPlay }: BoardProps) {
-  function handleClick(i: number) {
-    if (calculateWinner(squares) || squares[i]) {
-      return;
+  const calculateWinner = (squares: Array<string | null>) => {
+    const lines = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ];
+    for (let line of lines) {
+      const [a, b, c] = line;
+      if (
+        squares[a] &&
+        squares[a] === squares[b] &&
+        squares[a] === squares[c]
+      ) {
+        return squares[a];
+      }
     }
-    const nextSquares = squares.slice();
-    nextSquares[i] = xIsNext ? "X" : "O";
-    onPlay(nextSquares);
-  }
+    return null;
+  };
 
-  const winner = calculateWinner(squares);
+  const changeFigures = (newFigures: { X: string; O: string }) => {
+    setFigures(newFigures);
+    setBoard(
+      board.map((cell) =>
+        cell === defaultFigures.X
+          ? newFigures.X
+          : cell === defaultFigures.O
+          ? newFigures.O
+          : cell
+      )
+    );
+  };
+
+  const winner = calculateWinner(board);
   const status = winner
     ? `Winner: ${winner}`
-    : `Next player: ${xIsNext ? "X" : "O"}`;
+    : `Next Player: ${isXNext ? figures.X : figures.O}`;
 
   return (
-    <>
-      <div className="status">{status}</div>
-      {[0, 3, 6].map((row) => (
-        <div className="board-row" key={row}>
-          {[0, 1, 2].map((col) => {
-            const index = row + col;
-            return (
-              <Square
-                key={index}
-                value={squares[index]}
-                onSquareClick={() => handleClick(index)}
-              />
-            );
-          })}
+    <div className="flex items-center justify-center h-screen bg-blue-200">
+      <div className="text-center p-6 bg-white shadow-lg rounded-lg">
+        <h1 className="text-2xl font-bold mb-4">Tic Tac Toe</h1>
+        <div className="grid grid-cols-3 gap-2">
+          {board.map((cell, index) => (
+            <button
+              key={index}
+              className={boardStyle}
+              onClick={() => handleClick(index)}
+            >
+              {cell}
+            </button>
+          ))}
         </div>
-      ))}
-    </>
-  );
-}
-
-export default function LocalGame() {
-  const [history, setHistory] = useState<(string | null)[][]>([
-    Array(9).fill(null),
-  ]);
-  const [currentMove, setCurrentMove] = useState(0);
-  const xIsNext = currentMove % 2 === 0;
-  const currentSquares = history[currentMove];
-
-  function handlePlay(nextSquares: (string | null)[]) {
-    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
-    setHistory(nextHistory);
-    setCurrentMove(nextHistory.length - 1);
-  }
-
-  function jumpTo(nextMove: number) {
-    setCurrentMove(nextMove);
-  }
-
-  const moves = history.map((_, move) => (
-    <li key={move}>
-      <button onClick={() => jumpTo(move)}>
-        {move > 0 ? `Go to move #${move}` : "Go to game start"}
-      </button>
-    </li>
-  ));
-
-  return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "linear-gradient(135deg, #42a5f5, #7e57c2)",
-        padding: 3,
-        position: "relative",
-      }}
-    >
-      <div className="game">
-        <div className="game-board">
-          <Board
-            xIsNext={xIsNext}
-            squares={currentSquares}
-            onPlay={handlePlay}
-          />
-        </div>
-        <div className="game-info">
-          <ol>{moves}</ol>
+        <p className="mt-4 text-lg font-semibold">{status}</p>
+        <div className="mt-4">
+          <button
+            className="mr-2 px-4 py-2 bg-gray-300 rounded"
+            onClick={() => changeFigures({ X: "🔥", O: "❄️" })}
+          >
+            Fire & Ice
+          </button>
+          <button
+            className="px-4 py-2 bg-gray-300 rounded"
+            onClick={() => changeFigures(defaultFigures)}
+          >
+            Reset Figures
+          </button>
         </div>
       </div>
-    </Box>
+    </div>
   );
-}
+};
 
-function calculateWinner(squares: (string | null)[]): string | null {
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (const [a, b, c] of lines) {
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
-    }
-  }
-  return null;
-}
+export default LocalGame;
