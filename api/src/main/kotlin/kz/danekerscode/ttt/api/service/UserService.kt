@@ -2,8 +2,10 @@ package kz.danekerscode.ttt.api.service
 
 import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.model.dto.UserDto
+import kz.danekerscode.ttt.api.model.enums.FriendshipStatus
 import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
 import kz.danekerscode.ttt.api.repository.GameRoomRepository
+import kz.danekerscode.ttt.api.repository.UserFriendshipRepository
 import kz.danekerscode.ttt.api.repository.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
@@ -14,7 +16,8 @@ import java.util.*
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val gameRoomRepository: GameRoomRepository
+    private val gameRoomRepository: GameRoomRepository,
+    private val userFriendshipRepository: UserFriendshipRepository
 ) {
     fun currentUser(): User? {
         return SecurityContextHolder.getContext().authentication?.let {
@@ -51,10 +54,18 @@ class UserService(
                             playerX = user.id!!,
                             playerO = user.id!!,
                             status = GameRoomStatus.IN_PROGRESS
-                        )
+                        ),
+                        friendshipStatus = this.findFriendShipStatus(currentUser.id!!, user.id!!)
                     )
                 }
         }
     }
 
+    private fun findFriendShipStatus(
+        userId: String,
+        friendId: String
+    ): FriendshipStatus =
+        userFriendshipRepository.findAllByUserIdOrFriendId(userId, friendId).apply {
+            addAll(userFriendshipRepository.findAllByUserIdOrFriendId(friendId, userId))
+        }.firstOrNull()?.status ?: FriendshipStatus.NONE
 }

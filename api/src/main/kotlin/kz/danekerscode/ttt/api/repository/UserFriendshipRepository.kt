@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserFriendshipRepository : MongoRepository<UserFriendship, String>{
-    fun findAllByUserIdOrFriendId(userId: String, friendId: String): List<UserFriendship>
+    fun findAllByUserIdOrFriendId(userId: String, friendId: String): MutableList<UserFriendship>
 }

@@ -45,6 +45,18 @@ class UserService {
     );
     return response.data;
   }
+
+  async createFriendship(
+    currentUserId: string,
+    receiverId: string
+  ): Promise<unknown> {
+    const reqBody = { userId: currentUserId, friendId: receiverId };
+    const response = await axios.post<unknown>(
+      "/api/v1/user-friendships",
+      reqBody
+    );
+    return response.data;
+  }
 }
 
 export const userService = new UserService();

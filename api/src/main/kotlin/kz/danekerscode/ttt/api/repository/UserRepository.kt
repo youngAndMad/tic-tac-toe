@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 
 interface UserRepository : MongoRepository<User, String> {
     fun existsUserByUsername(email: String): Boolean
+
     fun findByUsername(username: String): User?
 
     fun countAllByOnlineIsTrue(): Long

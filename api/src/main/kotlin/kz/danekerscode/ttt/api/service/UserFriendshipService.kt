@@ -52,8 +52,9 @@ class UserFriendshipService(
                         isInGame = gameRoomRepository.existsByPlayerXOrPlayerOAndStatus(
                             playerX = friendId,
                             playerO = friendId,
-                            status = GameRoomStatus.IN_PROGRESS
-                        )
+                            status = GameRoomStatus.IN_PROGRESS,
+                        ),
+                        friendshipStatus = userFriendship.status
                     )
                 }
         }?.toMutableList() ?: mutableListOf()

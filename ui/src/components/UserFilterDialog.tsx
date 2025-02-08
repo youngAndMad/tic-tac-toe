@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useState } from "react";
+import { useUser } from "../hooks/useUser";
 import { UserDto } from "../models/user.model";
 import { userService } from "../service/user.service";
 
@@ -26,6 +27,7 @@ const UserFilterDialog: React.FC<UserFilterDialogProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState<UserDto[]>([]);
+  const { user } = useUser();
 
   const handleSearch = async () => {
     if (searchQuery.trim() === "") return;
@@ -34,6 +36,19 @@ const UserFilterDialog: React.FC<UserFilterDialogProps> = ({
       setResults(filtered);
     } catch (error) {
       console.error("Error fetching filtered users:", error);
+    }
+  };
+
+  const inviteUser = async (userId: string) => {
+    try {
+      await userService.createFriendship(user?.id!!, userId);
+      setResults((prev) =>
+        prev.map((user) =>
+          user.user.id === userId ? { ...user, friendShip: "PENDING" } : user
+        )
+      );
+    } catch (error) {
+      console.error("Error sending invite:", error);
     }
   };
 
@@ -57,7 +72,20 @@ const UserFilterDialog: React.FC<UserFilterDialogProps> = ({
             </ListItem>
           ) : (
             results.map((user) => (
-              <ListItem key={user.user.id}>
+              <ListItem
+                key={user.user.id}
+                secondaryAction={
+                  user.friendshipStatus === "NONE" && (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => inviteUser(user.user.id)}
+                    >
+                      Invite
+                    </Button>
+                  )
+                }
+              >
                 <ListItemAvatar>
                   <Avatar
                     src={`/api/v1/users/avatar/${user.user.id}`}
