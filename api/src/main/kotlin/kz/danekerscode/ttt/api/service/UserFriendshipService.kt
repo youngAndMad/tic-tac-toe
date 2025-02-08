@@ -18,10 +18,6 @@ class UserFriendshipService(
         return userFriendshipRepository.save(userFriendship)
     }
 
-    fun getUserFriendshipById(id: String): UserFriendship? {
-        return userFriendshipRepository.findById(id).orElse(null)
-    }
-
     fun updateUserFriendship(id: String, userFriendship: UserFriendship): UserFriendship? {
         return if (userFriendshipRepository.existsById(id)) {
             userFriendship.id = id

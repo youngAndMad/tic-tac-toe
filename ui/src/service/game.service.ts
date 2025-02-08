@@ -1,8 +1,9 @@
 import axios from "axios";
+import { Game } from "../models/game.model";
 
 class GameService {
-  async createOrJoinRoom(): Promise<unknown> {
-    const createOrJoinRoomResponse = await axios.post<unknown>("/api/v1/game");
+  async createOrJoinRoom(): Promise<Game> {
+    const createOrJoinRoomResponse = await axios.post<Game>("/api/v1/game");
     return createOrJoinRoomResponse.data;
   }
 }

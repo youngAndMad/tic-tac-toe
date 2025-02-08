@@ -1,3 +1,4 @@
+import CircleNotificationsIcon from "@mui/icons-material/CircleNotifications";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Avatar,
@@ -39,7 +40,10 @@ const UserList: React.FC = () => {
   const handleRandomGame = async () => {
     console.log("Starting random game");
     try {
-      gameService.createOrJoinRoom();
+      const game = await gameService.createOrJoinRoom();
+      if (game.playerO === null) {
+        console.log("Waiting for another player to join the game");
+      }
     } catch (e) {
       console.error(e);
     }
@@ -72,6 +76,9 @@ const UserList: React.FC = () => {
         <CardContent>
           <IconButton color="inherit" onClick={() => setIsPopupOpen(true)}>
             <SearchIcon />
+          </IconButton>
+          <IconButton color="inherit" onClick={() => setIsPopupOpen(true)}>
+            <CircleNotificationsIcon />
           </IconButton>
           {users.length === 0 ? (
             <Typography variant="body1" textAlign="center">
