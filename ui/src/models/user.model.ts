@@ -4,6 +4,11 @@ export type User = {
   online: boolean;
 };
 
+export type UserDto = {
+  user: User;
+  isInGame: boolean;
+};
+
 export type UsersCount = {
   count: number;
 };

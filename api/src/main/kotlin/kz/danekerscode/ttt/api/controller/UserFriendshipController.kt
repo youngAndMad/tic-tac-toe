@@ -2,6 +2,7 @@ package kz.danekerscode.ttt.api.controller
 
 import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.model.UserFriendship
+import kz.danekerscode.ttt.api.model.dto.UserDto
 import kz.danekerscode.ttt.api.service.UserFriendshipService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -49,19 +50,19 @@ class UserFriendshipController(
     }
 
     @GetMapping
-    fun getAllUserFriendships(): MutableList<User> {
+    fun getAllUserFriendships(): MutableList<UserDto> {
         return userFriendshipService.getAllUserFriendships()
             .apply {
-                add(User().apply {
+                add(UserDto(user = User().apply {
                     this.id = "1"
                     this.online = true
                     this.username = "mock"
-                })
-                add(User().apply {
-                    this.id = "2"
+                }, isInGame = true))
+                add(UserDto(user = User().apply {
+                    this.id ="2"
                     this.online = false
-                    this.username = "another mock user"
-                })
+                    this.username = "another mock"
+                }, isInGame = false))
             }
     }
 }

@@ -1,4 +1,6 @@
-package kz.danekerscode.ttt.api.model
+package kz.danekerscode.ttt.api.model.dto
+
+import kz.danekerscode.ttt.api.model.User
 
 class GameEvent(
     val type: String,

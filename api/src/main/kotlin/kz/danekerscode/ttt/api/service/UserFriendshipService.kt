@@ -1,14 +1,17 @@
 package kz.danekerscode.ttt.api.service
 
-import kz.danekerscode.ttt.api.model.User
 import kz.danekerscode.ttt.api.model.UserFriendship
+import kz.danekerscode.ttt.api.model.dto.UserDto
+import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
+import kz.danekerscode.ttt.api.repository.GameRoomRepository
 import kz.danekerscode.ttt.api.repository.UserFriendshipRepository
 import org.springframework.stereotype.Service
 
 @Service
 class UserFriendshipService(
     private val userFriendshipRepository: UserFriendshipRepository,
-    private val userService: UserService
+    private val userService: UserService,
+    private val gameRoomRepository: GameRoomRepository
 ) {
 
     fun createUserFriendship(userFriendship: UserFriendship): UserFriendship {
@@ -34,16 +37,24 @@ class UserFriendshipService(
         }
     }
 
-    fun getAllUserFriendships(): MutableList<User> {
+    fun getAllUserFriendships(): MutableList<UserDto> {
         return userService.currentUser()?.let {
             val currentUserId = it.id!!
             userFriendshipRepository.findAllByUserIdOrFriendId(userId = currentUserId, friendId = currentUserId)
                 .map { userFriendship ->
-                    if (userFriendship.userId == currentUserId) {
-                        userService.findById(userFriendship.friendId!!)
+                    val friendId = if (userFriendship.userId == currentUserId) {
+                        userFriendship.friendId
                     } else {
-                        userService.findById(userFriendship.userId!!)
-                    }
+                        userFriendship.userId
+                    }!!
+                    UserDto(
+                        user = userService.findById(friendId),
+                        isInGame = gameRoomRepository.existsByPlayerXOrPlayerOAndStatus(
+                            playerX = friendId,
+                            playerO = friendId,
+                            status = GameRoomStatus.IN_PROGRESS
+                        )
+                    )
                 }
         }?.toMutableList() ?: mutableListOf()
     }

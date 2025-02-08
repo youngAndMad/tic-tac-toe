@@ -2,6 +2,7 @@ package kz.danekerscode.ttt.api.controller
 
 import jakarta.servlet.http.HttpServletResponse
 import kz.danekerscode.ttt.api.model.User
+import kz.danekerscode.ttt.api.model.dto.UserDto
 import kz.danekerscode.ttt.api.service.UserService
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -42,4 +43,9 @@ class UserController(
 
     @GetMapping("/online")
     fun onlineUsersCount() = mapOf("count" to userService.countOnlineUsers())
+
+    @GetMapping("/filter")
+    fun filterUsers(
+        @RequestParam keyword: String
+    ) : List<UserDto> = userService.filterUsers(keyword)
 }

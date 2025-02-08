@@ -1,5 +1,5 @@
 import axios from "axios";
-import { User, UsersCount } from "../models/user.model";
+import { User, UserDto, UsersCount } from "../models/user.model";
 
 class UserService {
   async me(): Promise<User> {
@@ -12,8 +12,8 @@ class UserService {
     }
   }
 
-  async getFriends(): Promise<User[]> {
-    const meResponse = await axios.get<User[]>("/api/v1/user-friendships");
+  async getFriends(): Promise<UserDto[]> {
+    const meResponse = await axios.get<UserDto[]>("/api/v1/user-friendships");
     return meResponse.data;
   }
 
@@ -37,6 +37,13 @@ class UserService {
   async onlineUsersCount(): Promise<UsersCount> {
     const meResponse = await axios.get<UsersCount>("/api/v1/users/online");
     return meResponse.data;
+  }
+
+  async filterUsers(query: string): Promise<UserDto[]> {
+    const response = await axios.get<UserDto[]>(
+      `/api/v1/users/filter?keyword=${query}`
+    );
+    return response.data;
   }
 }
 

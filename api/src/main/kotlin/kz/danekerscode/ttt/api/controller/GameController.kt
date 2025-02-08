@@ -2,9 +2,7 @@ package kz.danekerscode.ttt.api.controller
 
 import kz.danekerscode.ttt.api.model.GameRoom
 import kz.danekerscode.ttt.api.service.GameService
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
@@ -15,7 +13,13 @@ class GameController(
 
     @PostMapping
     fun createOrJoinRoom(): GameRoom {
-       return gameService.createOrJoinRoom()
+        return gameService.createOrJoinRoom()
     }
 
+    @GetMapping("/start/{friendId}")
+    fun startGameRequest(
+        @PathVariable friendId: String
+    ) {
+        gameService.sendStartGameRequest(friendId)
+    }
 }

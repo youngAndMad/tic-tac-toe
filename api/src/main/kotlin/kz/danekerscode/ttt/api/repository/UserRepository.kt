@@ -8,4 +8,6 @@ interface UserRepository : MongoRepository<User, String> {
     fun findByUsername(username: String): User?
 
     fun countAllByOnlineIsTrue(): Long
+
+    fun findAllByUsernameLike(username: String): List<User>
 }

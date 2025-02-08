@@ -1,6 +1,9 @@
 package kz.danekerscode.ttt.api.service
 
 import kz.danekerscode.ttt.api.model.User
+import kz.danekerscode.ttt.api.model.dto.UserDto
+import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
+import kz.danekerscode.ttt.api.repository.GameRoomRepository
 import kz.danekerscode.ttt.api.repository.UserRepository
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User
@@ -10,7 +13,8 @@ import java.util.*
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val gameRoomRepository: GameRoomRepository
 ) {
     fun currentUser(): User? {
         return SecurityContextHolder.getContext().authentication?.let {
@@ -33,6 +37,24 @@ class UserService(
 
     fun countOnlineUsers(): Long {
         return userRepository.countAllByOnlineIsTrue()
+    }
+
+    fun filterUsers(keyword: String): List<UserDto> {
+        val currentUser = currentUser()!!
+        return userRepository.findAllByUsernameLike(keyword).let { users ->
+            users
+                .filter { it.id != currentUser.id }
+                .map { user ->
+                    UserDto(
+                        user = user,
+                        isInGame = gameRoomRepository.existsByPlayerXOrPlayerOAndStatus(
+                            playerX = user.id!!,
+                            playerO = user.id!!,
+                            status = GameRoomStatus.IN_PROGRESS
+                        )
+                    )
+                }
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package kz.danekerscode.ttt.api.model
 
+import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.time.Instant

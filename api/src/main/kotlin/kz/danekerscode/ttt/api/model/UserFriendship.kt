@@ -1,5 +1,6 @@
 package kz.danekerscode.ttt.api.model
 
+import kz.danekerscode.ttt.api.model.enums.FriendshipStatus
 import org.springframework.data.mongodb.core.mapping.Document
 
 

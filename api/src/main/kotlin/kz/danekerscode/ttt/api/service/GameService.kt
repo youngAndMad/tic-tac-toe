@@ -1,7 +1,9 @@
 package kz.danekerscode.ttt.api.service
 
+import kz.danekerscode.ttt.api.model.GameRequest
 import kz.danekerscode.ttt.api.model.GameRoom
-import kz.danekerscode.ttt.api.model.GameRoomStatus
+import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
+import kz.danekerscode.ttt.api.repository.GameRequestRepository
 import kz.danekerscode.ttt.api.repository.GameRoomRepository
 import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.stereotype.Service
@@ -10,7 +12,8 @@ import org.springframework.stereotype.Service
 class GameService(
     private val gameRoomRepository: GameRoomRepository,
     private val userService: UserService,
-    private val smt: SimpMessagingTemplate
+    private val smt: SimpMessagingTemplate,
+    private val gameRequestRepository: GameRequestRepository
 ) {
 
     fun createOrJoinRoom(): GameRoom {
@@ -22,12 +25,12 @@ class GameService(
             availableRoom.playerO = userId
             availableRoom.status = GameRoomStatus.IN_PROGRESS
             availableRoom.currentTurn = availableRoom.playerX
-            val gameRoom = gameRoomRepository.save(availableRoom)
 
-            gameRoom.also {
+
+            gameRoomRepository.save(availableRoom).also {
                 smt.convertAndSend(
                     "/user/${availableRoom.playerX}/game",
-                    gameRoom
+                    it
                 )
                 println("Sent to ${availableRoom.playerX}")
             }
@@ -56,5 +59,22 @@ class GameService(
         room.currentTurn = if (room.currentTurn == room.playerX) room.playerO else room.playerX
 
         return gameRoomRepository.save(room)
+    }
+
+    fun sendStartGameRequest(friendId: String) {
+        val friendUser = userService.findById(friendId)
+        val currentUser = userService.currentUser()!!
+
+        if (!friendUser.online) {
+            throw RuntimeException("User is not online")
+        }
+
+        val gameRequest = GameRequest().apply {
+            this.from = currentUser.id
+            this.to = friendId
+        }
+
+        gameRequestRepository.save(gameRequest)
+        smt.convertAndSend("/user/$friendId/game/request", gameRequest)
     }
 }
