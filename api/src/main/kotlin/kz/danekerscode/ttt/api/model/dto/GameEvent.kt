@@ -1,10 +1,10 @@
 package kz.danekerscode.ttt.api.model.dto
 
-import kz.danekerscode.ttt.api.model.User
-
 class GameEvent(
-    val type: String,
-    val anotherUser: User,
-    val roomId: String,
-) {
+    val type: GameEventType,
+    val payload: Any
+)
+
+enum class GameEventType {
+    ROOM_CREATED
 }

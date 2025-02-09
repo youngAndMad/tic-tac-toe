@@ -19,6 +19,7 @@ type WebSocketContextProps = {
   subscribe: (topic: string, callback: (message: Message) => void) => void;
   unsubscribe: (topic: string) => void;
   sendMessage: (destination: string, body: string) => void;
+  connected: boolean;
 };
 
 const WebSocketContext = createContext<WebSocketContextProps | undefined>(
@@ -28,6 +29,7 @@ const WebSocketContext = createContext<WebSocketContextProps | undefined>(
 export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
   const [client, setClient] = useState<Client | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [connected, setConnected] = useState(false);
 
   const { user } = useUser();
 
@@ -43,6 +45,8 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
       {},
       () => {
         console.log("Connected to WebSocket");
+        setConnected(true);
+
         subscriptions.forEach(({ topic, callback }) => {
           stompClient.subscribe(topic, (message) => callback(message));
         });
@@ -58,21 +62,27 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
       if (stompClient.connected) {
         stompClient.disconnect(() => {
           console.log("Disconnected from WebSocket");
+          setConnected(false);
         });
       }
     };
-  }, [subscriptions, user]);
+  }, [user]);
 
   const subscribe = useCallback(
     (topic: string, callback: (message: Message) => void) => {
-      if (client?.connected) {
+      if (
+        client?.connected &&
+        user &&
+        subscriptions.every((sub) => sub.topic !== topic)
+      ) {
+        console.log("Subscribing to", topic);
         client.subscribe(topic, (message) => callback(message));
         setSubscriptions((prev) => [...prev, { topic, callback }]);
       } else {
         console.error("Client is not connected. Cannot subscribe to", topic);
       }
     },
-    [client]
+    [client, user]
   );
 
   const unsubscribe = useCallback(
@@ -107,6 +117,7 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
   return (
     <WebSocketContext.Provider
       value={{
+        connected,
         subscribe,
         unsubscribe,
         sendMessage,

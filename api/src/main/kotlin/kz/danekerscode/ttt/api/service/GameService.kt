@@ -2,6 +2,8 @@ package kz.danekerscode.ttt.api.service
 
 import kz.danekerscode.ttt.api.model.GameRequest
 import kz.danekerscode.ttt.api.model.GameRoom
+import kz.danekerscode.ttt.api.model.dto.GameEvent
+import kz.danekerscode.ttt.api.model.dto.GameEventType
 import kz.danekerscode.ttt.api.model.enums.GameRoomStatus
 import kz.danekerscode.ttt.api.repository.GameRequestRepository
 import kz.danekerscode.ttt.api.repository.GameRoomRepository
@@ -30,7 +32,10 @@ class GameService(
             gameRoomRepository.save(availableRoom).also {
                 smt.convertAndSend(
                     "/user/${availableRoom.playerX}/game",
-                    it
+                    GameEvent(
+                        type = GameEventType.ROOM_CREATED,
+                        payload = it
+                    ),
                 )
                 println("Sent to ${availableRoom.playerX}")
             }
