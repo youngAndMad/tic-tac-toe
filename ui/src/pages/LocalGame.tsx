@@ -119,7 +119,19 @@ const LocalGame: React.FC = () => {
               const selectedOption = figureOptions.find(
                 (option) => option.label === e.target.value
               );
-              if (selectedOption) setFigures(selectedOption.figures);
+              if (selectedOption) {
+                setFigures(selectedOption.figures);
+
+                setBoard((prevBoard) =>
+                  prevBoard.map((cell) =>
+                    cell === figures.X
+                      ? selectedOption.figures.X
+                      : cell === figures.O
+                      ? selectedOption.figures.O
+                      : cell
+                  )
+                );
+              }
             }}
           >
             {figureOptions.map((option, index) => (

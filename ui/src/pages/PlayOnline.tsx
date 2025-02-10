@@ -60,6 +60,7 @@ export default function PlayOnline() {
       const game = await gameService.createOrJoinRoom();
       if (game.playerO === null) {
         console.log("Waiting for another player to join the game");
+        localStorage.setItem("waitingGame", "true");
         setLoading(true);
       }
     } catch (e) {
