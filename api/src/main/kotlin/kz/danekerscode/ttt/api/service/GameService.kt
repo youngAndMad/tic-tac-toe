@@ -28,42 +28,49 @@ class GameService(
             availableRoom.status = GameRoomStatus.IN_PROGRESS
             availableRoom.currentTurn = availableRoom.playerX
 
-
-            gameRoomRepository.save(availableRoom).also {
-                smt.convertAndSend(
-                    "/user/${availableRoom.playerX}/game",
-                    GameEvent(
-                        type = GameEventType.ROOM_CREATED,
-                        payload = it
-                    ),
-                )
-                println("Sent to ${availableRoom.playerX}")
-            }
+            val gameRoom = gameRoomRepository.save(availableRoom)
+            smt.convertAndSend(
+                "/user/${availableRoom.playerX}/game",
+                GameEvent(
+                    type = GameEventType.ROOM_CREATED,
+                    payload = gameRoom
+                ),
+            )
+            println("Sent to ${availableRoom.playerX}")
+            gameRoom
         } else {
             val newRoom = GameRoom(
                 playerX = userId,
                 status = GameRoomStatus.WAITING,
                 currentTurn = null,
-                board = Array(3) {
-                    Array(3) {
-                        ""
-                    }
-                }
             )
             println("Created new room")
             gameRoomRepository.save(newRoom)
         }
     }
 
-    fun makeMove(roomId: String, userId: String, x: Int, y: Int): GameRoom? {
+    fun makeMove(roomId: String, idx: Int): GameRoom? {
         val room = gameRoomRepository.findById(roomId).orElse(null) ?: return null
+        val currentUser = userService.currentUser()
+        val userId = currentUser!!.id!!
+        if (room.currentTurn != userId || room.board[idx].isNotEmpty()) return null
 
-        if (room.currentTurn != userId || room.board[x][y].isNotEmpty()) return null
-
-        room.board[x][y] = if (room.playerX == userId) "X" else "O"
+        room.board[idx] = if (room.playerX == userId) "X" else "O"
         room.currentTurn = if (room.currentTurn == room.playerX) room.playerO else room.playerX
 
-        return gameRoomRepository.save(room)
+        val gameRoom = gameRoomRepository.save(room)
+
+        val receiverId = if (room.playerX == userId) room.playerO else room.playerX
+
+        smt.convertAndSend(
+            "/user/$receiverId/game",
+            GameEvent(
+                type = GameEventType.MOVE_MADE,
+                payload = gameRoom
+            ),
+        )
+
+        return gameRoom
     }
 
     fun sendStartGameRequest(friendId: String) {
@@ -82,4 +89,9 @@ class GameService(
         gameRequestRepository.save(gameRequest)
         smt.convertAndSend("/user/$friendId/game/request", gameRequest)
     }
+
+    fun findRoom(id: String): GameRoom = gameRoomRepository.findById(id)
+        .orElseThrow {
+            RuntimeException("Room not found")
+        }
 }

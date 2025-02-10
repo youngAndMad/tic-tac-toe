@@ -11,7 +11,7 @@ class GameRoom(
     var id: String? = null,
     var playerX: String? = null,
     var playerO: String? = null,
-    var board: Array<Array<String>> = Array(3) { Array(3) { "" } },
+    var board: Array<String> = Array(9) { "" },
     var currentTurn: String? = null,
     var status: GameRoomStatus = GameRoomStatus.WAITING,
     var createdDate: Instant = Instant.now()

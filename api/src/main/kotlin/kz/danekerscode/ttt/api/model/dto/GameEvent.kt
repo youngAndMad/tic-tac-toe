@@ -6,5 +6,6 @@ class GameEvent(
 )
 
 enum class GameEventType {
-    ROOM_CREATED
+    ROOM_CREATED,
+    MOVE_MADE,
 }

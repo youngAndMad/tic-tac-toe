@@ -22,4 +22,14 @@ class GameController(
     ) {
         gameService.sendStartGameRequest(friendId)
     }
+
+    @GetMapping("{id}")
+    fun findRoom(@PathVariable id: String): GameRoom = gameService.findRoom(id)
+
+    @PostMapping("{id}/move")
+    fun makeMove(
+        @PathVariable id: String,
+        @RequestParam idx: Int
+    ) = gameService.makeMove(id, idx)
+
 }
