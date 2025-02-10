@@ -70,11 +70,7 @@ export const WebSocketProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const subscribe = useCallback(
     (topic: string, callback: (message: Message) => void) => {
-      if (
-        client?.connected &&
-        user &&
-        subscriptions.every((sub) => sub.topic !== topic)
-      ) {
+      if (client?.connected && user) {
         console.log("Subscribing to", topic);
         client.subscribe(topic, (message) => callback(message));
         setSubscriptions((prev) => [...prev, { topic, callback }]);

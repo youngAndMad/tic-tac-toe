@@ -15,10 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import GoBackButton from "../components/GoBackButton";
 import UserFilterDialog from "../components/UserFilterDialog";
 import { useUser } from "../hooks/useUser";
 import { useWebSocket } from "../hooks/useWebSocket";
+import { GameEvent } from "../models/game.model";
 import { UserDto } from "../models/user.model";
 import { gameService } from "../service/game.service";
 import { userService } from "../service/user.service";
@@ -26,11 +28,20 @@ import { userService } from "../service/user.service";
 export default function PlayOnline() {
   const { subscribe, connected } = useWebSocket();
   const { user } = useUser();
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (connected) {
       subscribe(`/user/${user?.id}/game`, (message) => {
-        const messageData = JSON.parse(message.body);
+        const messageData = JSON.parse(message.body) as GameEvent;
         console.log("Received message", messageData);
+
+        switch (messageData.type) {
+          case "ROOM_CREATED": {
+            navigate(`/online-game?i=${messageData.payload.id}`);
+            break;
+          }
+        }
       });
     }
   }, [connected, user, subscribe]);
@@ -38,7 +49,8 @@ export default function PlayOnline() {
   const [users, setUsers] = useState<UserDto[]>([]);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [loading, setLoading] = useState(
-    localStorage.getItem("waitingGame") === "true"
+    false
+    // localStorage.getItem("waitingGame") === "true"
   );
 
   useEffect(() => {
@@ -62,6 +74,8 @@ export default function PlayOnline() {
         console.log("Waiting for another player to join the game");
         localStorage.setItem("waitingGame", "true");
         setLoading(true);
+      } else {
+        navigate(`/online-game?i=${game.id}`);
       }
     } catch (e) {
       console.error(e);

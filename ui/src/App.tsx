@@ -5,9 +5,11 @@ import { UserProvider } from "./hooks/useUser";
 import theme from "./lib/theme";
 import LocalGame from "./pages/LocalGame";
 import MenuPage from "./pages/MenuPage";
+import OnlineGame from "./pages/OnlineGame";
 import PlayOnline from "./pages/PlayOnline";
 import ProfilePage from "./pages/Profile";
 import SettingsPage from "./pages/Settings";
+import { LocalMusicProvider } from "./providers/LocalMusicProvider";
 import { WebSocketProvider } from "./providers/WebSocketProvider";
 
 axios.interceptors.response.use((response) => {
@@ -24,15 +26,18 @@ export default function App() {
       <ThemeProvider theme={theme}>
         <UserProvider>
           <WebSocketProvider>
-            <Router>
-              <Routes>
-                <Route path="/" element={<MenuPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-                <Route path="/profile" element={<ProfilePage />} />
-                <Route path="/local-game" element={<LocalGame />} />
-                <Route path="/game" element={<PlayOnline />} />
-              </Routes>
-            </Router>
+            <LocalMusicProvider>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<MenuPage />} />
+                  <Route path="/settings" element={<SettingsPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
+                  <Route path="/local-game" element={<LocalGame />} />
+                  <Route path="/game" element={<PlayOnline />} />
+                  <Route path="/online-game" element={<OnlineGame />} />
+                </Routes>
+              </Router>
+            </LocalMusicProvider>
           </WebSocketProvider>
         </UserProvider>
       </ThemeProvider>

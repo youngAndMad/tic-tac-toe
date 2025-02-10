@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import Howler from "react-howler";
 import GoBackButton from "../components/GoBackButton";
+import { useLocalMucic } from "../hooks/useLocalMusic";
 
 const musicTracks = [
   "/music/track1.mp3",
@@ -21,8 +22,9 @@ const musicTracks = [
 
 export default function SettingsPage() {
   const theme = useTheme();
+  const { enabled: musicEnabled } = useLocalMucic();
   const [darkMode, setDarkMode] = useState(theme.palette.mode === "dark");
-  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(musicEnabled);
   const [volume, setVolume] = useState(50);
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
 
@@ -89,7 +91,10 @@ export default function SettingsPage() {
             <Typography>Sound</Typography>
             <Switch
               checked={soundEnabled}
-              onChange={() => setSoundEnabled(!soundEnabled)}
+              onChange={() => {
+                setSoundEnabled(!soundEnabled);
+                localStorage.setItem("musicEnabled", `${!soundEnabled}`);
+              }}
             />
           </Box>
 
